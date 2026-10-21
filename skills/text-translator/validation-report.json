@@ -1,0 +1,308 @@
+{
+  "summary": {
+    "ok": 33,
+    "block": 0,
+    "warn": 0,
+    "total": 33,
+    "passed": true
+  },
+  "scoring": {
+    "total_score": 100.0,
+    "verdict": "pass",
+    "groups": {
+      "dir": {
+        "score": 100.0,
+        "weight": 8
+      },
+      "yaml": {
+        "score": 100.0,
+        "weight": 10
+      },
+      "body": {
+        "score": 100.0,
+        "weight": 8
+      },
+      "script": {
+        "score": 100.0,
+        "weight": 6
+      },
+      "security": {
+        "score": 100.0,
+        "weight": 14
+      },
+      "kingdee": {
+        "score": 100.0,
+        "weight": 10
+      }
+    }
+  },
+  "groups": {
+    "dir": {
+      "label": "目录与文件结构",
+      "score": "6/6",
+      "rules": [
+        {
+          "name": "SKILL.md 文件存在",
+          "severity": "block",
+          "desc": "根目录必须包含 SKILL.md",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "目录名与 name 字段一致",
+          "severity": "block",
+          "desc": "name 字段必须与父目录名完全一致",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "标准目录与一级文件检查",
+          "severity": "warn",
+          "desc": "只允许 scripts/、references/、assets/、evals/、.meta/ 子目录及标准一级文件；隐藏点文件除外",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "引用文件存在",
+          "severity": "block",
+          "desc": "正文中引用的文件必须实际存在",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "文件引用深度",
+          "severity": "warn",
+          "desc": "文件引用必须为单层，不允许嵌套链",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "CHANGELOG 标题格式",
+          "severity": "block",
+          "desc": "版本标题须为 `## X.Y.Z — YYYY-MM-DD`",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    },
+    "yaml": {
+      "label": "YAML 元数据",
+      "score": "11/11",
+      "rules": [
+        {
+          "name": "Frontmatter 格式有效",
+          "severity": "block",
+          "desc": "必须有以 --- 分隔的有效 YAML",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "name 字段必填",
+          "severity": "block",
+          "desc": "name 字段不能为空",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "name 长度 1-64 字符",
+          "severity": "block",
+          "desc": "name 必须为 1-64 个字符",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "name 字符规范",
+          "severity": "block",
+          "desc": "只允许小写字母 a-z、数字 0-9 和连字符",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "name 首尾字符",
+          "severity": "block",
+          "desc": "不能以连字符开头或结尾",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "name 无连续连字符",
+          "severity": "block",
+          "desc": "不能包含连续连字符 --",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "description 必填",
+          "severity": "block",
+          "desc": "description 不能为空",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "description 长度限制",
+          "severity": "warn",
+          "desc": "应不超过 512 个字符",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "tags 数组格式",
+          "severity": "warn",
+          "desc": "tags 必须为字符串数组，每项 ≤32 字符",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "allowed-tools 格式有效",
+          "severity": "warn",
+          "desc": "allowed-tools 支持字符串列表或逗号分隔字符串",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "allowed-tools 无通配符",
+          "severity": "block",
+          "desc": "allowed-tools 条目不得包含 * 或 ? 通配符",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    },
+    "body": {
+      "label": "正文规范",
+      "score": "3/3",
+      "rules": [
+        {
+          "name": "正文行数限制",
+          "severity": "block",
+          "desc": "SKILL.md 正文不得超过 500 行",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "正文 token 限制",
+          "severity": "warn",
+          "desc": "正文指令建议不超过 5000 token（估算）",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "高风险操作确认",
+          "severity": "warn",
+          "desc": "write/action/composite 类别应包含确认步骤",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    },
+    "script": {
+      "label": "脚本规范",
+      "score": "2/2",
+      "rules": [
+        {
+          "name": "交互式输入扫描",
+          "severity": "block",
+          "desc": "扫描 input()/readline()/getpass() 交互式调用",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "使用说明文档",
+          "severity": "warn",
+          "desc": "检查 argparse / --help / docstring 使用说明",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    },
+    "security": {
+      "label": "安全与合规",
+      "score": "4/4",
+      "rules": [
+        {
+          "name": "敏感信息扫描",
+          "severity": "block",
+          "desc": "正则匹配 API Key / 密码 / Token / 私钥模式",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "配置泄露检测",
+          "severity": "block",
+          "desc": "检查 mcp.json 鉴权 headers 值是否泄露到技能文件",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "危险操作扫描",
+          "severity": "block",
+          "desc": "检测 rm -rf / DROP TABLE / DELETE FROM 危险命令",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "提示词注入扫描",
+          "severity": "block",
+          "desc": "检测「忽略前文」/「覆盖系统」等注入模式",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    },
+    "kingdee": {
+      "label": "金蝶技能检查",
+      "score": "7/7",
+      "rules": [
+        {
+          "name": "manifest.yaml 文件存在",
+          "severity": "block",
+          "desc": "金蝶技能必须包含 manifest.yaml",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "manifest 必填字段完整",
+          "severity": "block",
+          "desc": "display_name/version/category/risk_level/side_effect_level 为必填项",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "MCP 技能 allowed-tools 必填",
+          "severity": "block",
+          "desc": "MCP 工具要求 frontmatter 中 allowed-tools 非空",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "allowed-tools 与 manifest 一致",
+          "severity": "warn",
+          "desc": "allowed-tools 应与 manifest.yaml MCP 工具 id 一致",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "tool_access.tools 字段完整",
+          "severity": "warn",
+          "desc": "每个工具需包含 id/display_name/description/type",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "displayed_category 合法值",
+          "severity": "block",
+          "desc": "字段存在且非占位符；具体枚举由 list_skill_types 决定",
+          "status": "ok",
+          "msg": null
+        },
+        {
+          "name": "version 格式有效",
+          "severity": "warn",
+          "desc": "必须为 semver 格式 (x.y.z)",
+          "status": "ok",
+          "msg": null
+        }
+      ]
+    }
+  }
+}

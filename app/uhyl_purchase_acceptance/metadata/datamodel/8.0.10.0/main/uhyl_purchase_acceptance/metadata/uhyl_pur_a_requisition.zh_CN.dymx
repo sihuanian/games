@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<DeployMetadata>
+  <MasterId>622DVOZ+BM/1</MasterId>
+  <Id>622DVOZ+BM/1</Id>
+  <DesignMetas>
+    <DesignFormMetaL>
+      <Number>uhyl_pur_a_requisition</Number>
+      <PkId>622DVQR9MHMR</PkId>
+      <DataXml>
+        <FormMetadata/>
+      </DataXml>
+      <Name>采购验收申请单</Name>
+      <Id>622DVOZ+BM/1</Id>
+      <LocaleId>zh_CN</LocaleId>
+    </DesignFormMetaL>
+    <DesignEntityMetaL>
+      <Number>uhyl_pur_a_requisition</Number>
+      <PkId>622DVQXOU5LD</PkId>
+      <DataXml>
+        <EntityMetadata/>
+      </DataXml>
+      <Name>采购验收申请单</Name>
+      <Id>622DVOZ+BM/1</Id>
+      <LocaleId>zh_CN</LocaleId>
+    </DesignEntityMetaL>
+  </DesignMetas>
+  <Version>1789960506493</Version>
+  <BOSVersion>1.0</BOSVersion>
+</DeployMetadata>

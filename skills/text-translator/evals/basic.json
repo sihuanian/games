@@ -1,0 +1,42 @@
+[
+  {
+    "query": "帮我把这段话翻译成英文：今天下午三点有个重要会议，请准时参加。",
+    "should_trigger": true
+  },
+  {
+    "query": "把这个邮件翻译成日语，然后给出原文对照",
+    "should_trigger": true
+  },
+  {
+    "query": "翻译一下：Bonjour, je voudrais réserver une chambre d'hôtel pour deux nuits. 目标语言是中文",
+    "should_trigger": true
+  },
+  {
+    "query": "把这份合同条款从英文翻译成中文，要逐段对照展示",
+    "should_trigger": true
+  },
+  {
+    "query": "翻一下这段韩语：안녕하세요, 오늘 날씨가 정말 좋네요. 翻成中文",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我写一封英文商务邮件，内容是询问报价",
+    "should_trigger": false
+  },
+  {
+    "query": "解释一下什么是机器学习",
+    "should_trigger": false
+  },
+  {
+    "query": "把这段中文润色一下，让它更正式",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我总结一下这篇文章的主要内容",
+    "should_trigger": false
+  },
+  {
+    "query": "这个单词怎么读？pronunciation 的音标是什么",
+    "should_trigger": false
+  }
+]

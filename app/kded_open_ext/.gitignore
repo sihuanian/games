@@ -1,0 +1,7 @@
+# BEGIN app-build local state
+/_runtime/
+/metadata/_emit/
+/modify/
+/archive.json
+/archive.json.lock
+# END app-build local state

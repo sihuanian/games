@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# 依赖（forbidden-city-3d 运行时使用仓库内 vendor/three，无需提交 node_modules）
+node_modules/
+
+# Lingee Build 工具运行时：会话记录含宿主环境密钥，禁止提交
+.lingeebuild/
+.temp/
+
+# 苍穹应用的本地状态：令牌缓存与运行时中间产物
+app/_runtime/

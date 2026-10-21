@@ -1,0 +1,4 @@
+appCode	appName	appDescription	type	path
+kded_open_ext	开放平台	面向第三方的开放接口服务	cosmic	app/kded_open_ext/archive.json
+uhyl_purchase_acceptance	采购验收管理		cosmic	app/uhyl_purchase_acceptance/archive.json
+
