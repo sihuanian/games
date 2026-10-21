@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>紫禁城中轴线 · 三维重建沙盘</title>
+<meta name="description" content="以程序化重建方式呈现紫禁城中轴线自午门至神武门的三维空间格局、建筑形制与屋面关系，支持材质/白模/线框/形制图谱四种观察方式。">
+<link rel="stylesheet" href="./src/css/app.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/three.module.js",
+    "three/addons/utils/BufferGeometryUtils.js": "../vendor/three/BufferGeometryUtils.js",
+    "three/addons/controls/OrbitControls.js": "../vendor/three/OrbitControls.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="app" class="app">
+
+  <canvas id="viewport" class="viewport" aria-label="紫禁城中轴线三维沙盘视图" role="img"></canvas>
+
+  <!-- 三维场景中的建筑标注层（由脚本按相机投影定位） -->
+  <div id="labelLayer" class="label-layer" aria-hidden="true"></div>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+  <!-- 顶部：标题与数据性质说明 -->
+  <header class="hud topbar">
+    <div class="topbar__brand">
+      <span class="seal" aria-hidden="true">紫禁</span>
+      <div class="topbar__text">
+        <h1>紫禁城中轴线 · 三维重建沙盘</h1>
+        <p>自午门至神武门，沿一条轴线展开的十二组建筑与两翼院落</p>
+      </div>
+    </div>
+    <div class="topbar__meta">
+      <span class="badge badge--amber" title="模型由几何算法实时生成，平面与高度按接近真实的米制尺度布置，建筑体量经过简化">程序化重建 · 近似真实尺度</span>
+      <span class="badge">非测绘数据</span>
+    </div>
+  </header>
+
+  <!-- 左侧：中轴线视角导航（代表南北轴线的竖向序列） -->
+  <nav class="rail" aria-label="中轴线视角导航">
+    <div class="rail__head">
+      <span class="rail__title">轴线序列</span>
+      <span class="rail__hint" id="railHint">南 → 北</span>
+    </div>
+    <ol class="rail__list" id="railList"></ol>
+  </nav>
+
+  <!-- 右侧：选中建筑的形制详情 -->
+  <aside class="detail" id="detail" aria-live="polite" hidden></aside>
+
+  <!-- 底部：展示控制 -->
+  <div class="controls" id="controls">
+    <button class="controls__handle" id="controlsHandle" aria-expanded="false" aria-controls="controlsBody">
+      <span>展示控制</span>
+      <span class="controls__chevron" aria-hidden="true"></span>
+    </button>
+
+    <div class="controls__body" id="controlsBody">
+      <section class="ctrl">
+        <h2 class="ctrl__label">观察方式</h2>
+        <div class="seg" id="modeGroup" role="radiogroup" aria-label="观察方式">
+          <button type="button" role="radio" aria-checked="true" data-mode="render">材质效果</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="clay">白模</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="wire">线框</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="type">形制图谱</button>
+        </div>
+      </section>
+
+      <section class="ctrl">
+        <h2 class="ctrl__label">图层</h2>
+        <div class="toggles" id="layerGroup">
+          <label><input type="checkbox" data-layer="outbuild" checked><span>两翼院落</span></label>
+          <label><input type="checkbox" data-layer="wall" checked><span>宫墙角楼</span></label>
+          <label><input type="checkbox" data-layer="water" checked><span>水系</span></label>
+          <label><input type="checkbox" data-layer="trees" checked><span>植被</span></label>
+          <label><input type="checkbox" data-layer="labels" checked><span>形制标注</span></label>
+        </div>
+      </section>
+
+      <section class="ctrl ctrl--time">
+        <h2 class="ctrl__label">日照时刻 <b id="timeValue">10:00</b></h2>
+        <input type="range" id="timeSlider" min="5" max="20.5" step="0.25" value="10"
+               aria-label="日照时刻" aria-valuetext="10:00">
+        <div class="ticks" aria-hidden="true"><span>05:00</span><span>12:45</span><span>20:30</span></div>
+      </section>
+
+      <section class="ctrl ctrl--actions">
+        <button type="button" class="btn btn--primary" id="tourBtn" aria-pressed="false">轴线巡游</button>
+        <button type="button" class="btn" id="resetBtn">重置视角</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- 形制图谱图例 -->
+  <div class="legend" id="legend" hidden>
+    <h2 class="legend__title">屋顶形制</h2>
+    <ul class="legend__list" id="legendList"></ul>
+    <p class="legend__note">颜色仅用于区分形制类别，不代表年代或等级排序。</p>
+  </div>
+
+  <p class="sourcenote">
+    模型由几何算法实时生成，平面与高度按接近真实的米制尺度布置，建筑体量经过简化；形制与尺寸以故宫博物院官网各建筑条目为主要依据，个别官网未载的数值已单独标注，不作测绘依据。
+  </p>
+
+  <!-- 构建进度 -->
+  <div class="boot" id="boot">
+    <div class="boot__inner">
+      <span class="seal seal--lg" aria-hidden="true">紫禁</span>
+      <p class="boot__title">正在生成中轴线沙盘</p>
+      <p class="boot__step" id="bootStep">准备几何与材质…</p>
+      <div class="boot__bar"><span id="bootBar"></span></div>
+    </div>
+  </div>
+
+  <!-- WebGL 不可用时 -->
+  <div class="fallback" id="fallback" hidden>
+    <div class="fallback__inner">
+      <h2>无法启动三维视图</h2>
+      <p id="fallbackMsg">当前浏览器或设备未能初始化 WebGL 渲染环境。</p>
+      <p class="fallback__hint">请改用较新版本的 Chrome、Edge 或 Safari，并确认已启用硬件加速。</p>
+    </div>
+  </div>
+
+  <p class="sr-only" id="liveRegion" role="status" aria-live="polite"></p>
+</div>
+
+<script type="module" src="./src/js/main.js"></script>
+<noscript>
+  <p style="padding:24px;font:16px/1.7 system-ui,sans-serif;color:#f2ede3;background:#12100c">
+    本页需要 JavaScript 才能渲染三维沙盘。
+  </p>
+</noscript>
+</body>
+</html>

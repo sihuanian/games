@@ -1,0 +1,13 @@
+{
+  "name": "forbidden-city-3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "紫禁城中轴线 3D 重建展示沙盘",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}
