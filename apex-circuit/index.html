@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>环线竞速 APEX CIRCUIT · 伪3D街机赛车</title>
+<meta name="description" content="伪 3D 街机赛车游戏：黄昏环线赛道、连续弯组与长坡，5 位 AI 车手同场发车，每一圈都会被计时。">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app" id="app">
+  <canvas id="stage" aria-label="赛道画面：黄昏环线，带弯道与坡道"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- 比赛内 HUD -->
+  <div class="hud" id="hud" hidden>
+    <div class="hud__top">
+      <div class="stat">
+        <span class="stat__label">名次</span>
+        <span class="stat__value"><b id="hudPos">1</b><i>/<span id="hudTotal">6</span></i></span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">圈数</span>
+        <span class="stat__value"><b id="hudLap">1</b><i>/<span id="hudLaps">3</span></i></span>
+      </div>
+      <div class="stat stat--time">
+        <span class="stat__label">本圈</span>
+        <span class="stat__value mono" id="hudLapTime">0:00.000</span>
+      </div>
+      <div class="stat stat--time">
+        <span class="stat__label">最快圈</span>
+        <span class="stat__value mono" id="hudBest">--:--.---</span>
+      </div>
+      <div class="hud__actions">
+        <button class="icon-btn" id="btnPause" type="button" aria-label="暂停比赛" title="暂停 (Esc)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="5" width="3.4" height="14" rx="1.1" fill="currentColor"></rect><rect x="13.6" y="5" width="3.4" height="14" rx="1.1" fill="currentColor"></rect></svg>
+          <span class="icon-btn__text">暂停</span>
+        </button>
+        <button class="icon-btn" id="btnMute" type="button" aria-label="关闭声音" aria-pressed="false" title="声音开关 (M)">
+          <svg class="ico-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.2L12 5v14L7.2 15H4z" fill="currentColor"></path><path d="M15 9.2a3.6 3.6 0 0 1 0 5.6M17.4 6.6a7.2 7.2 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
+          <svg class="ico-sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h3.2L12 5v14L7.2 15H4z" fill="currentColor"></path><path d="M15.4 9.6l5 4.8M20.4 9.6l-5 4.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
+          <span class="icon-btn__text">声音</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hud__bottom">
+      <div class="speedo">
+        <div class="speedo__row"><b class="mono" id="hudSpeed">0</b><span>km/h</span></div>
+        <div class="speedo__bar"><i id="speedoFill"></i></div>
+      </div>
+      <div class="progress" id="progress">
+        <div class="progress__track" aria-hidden="true"></div>
+        <i class="progress__fill" id="progressFill" aria-hidden="true"></i>
+        <div class="progress__rivals" id="progressRivals" aria-hidden="true"></div>
+        <i class="progress__me" id="progressMe" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- 发车倒计时 -->
+  <div class="countdown" id="countdown" hidden>
+    <span id="countdownText">3</span>
+    <span class="countdown__note" id="countdownNote">准备发车</span>
+  </div>
+
+  <!-- 起步画面 -->
+  <section class="screen screen--menu" id="screenMenu">
+    <div class="menu">
+      <header class="menu__head">
+        <p class="eyebrow">伪 3D 街机竞速</p>
+        <h1 class="title">环线竞速<span class="title__en">APEX CIRCUIT</span></h1>
+        <p class="lede">黄昏环线：三段 S 弯、一处盲顶长坡、一条下坡收尾直线。5 位车手同场发车，每一圈都在计时。</p>
+      </header>
+
+      <div class="menu__grid">
+        <div class="card">
+          <h2 class="card__title">操作</h2>
+          <dl class="keys">
+            <div><dt>加速</dt><dd><kbd>↑</kbd><kbd>W</kbd></dd></div>
+            <div><dt>刹车</dt><dd><kbd>↓</kbd><kbd>S</kbd></dd></div>
+            <div><dt>转向</dt><dd><kbd>←</kbd><kbd>→</kbd><kbd>A</kbd><kbd>D</kbd></dd></div>
+            <div><dt>手刹甩尾</dt><dd><kbd>空格</kbd></dd></div>
+            <div><dt>暂停 / 重开</dt><dd><kbd>Esc</kbd><kbd>R</kbd></dd></div>
+          </dl>
+        </div>
+        <div class="card">
+          <h2 class="card__title">比赛设置</h2>
+          <div class="segmented" id="difficulty" role="radiogroup" aria-label="难度">
+            <button type="button" role="radio" aria-checked="false" data-level="easy">轻松</button>
+            <button type="button" role="radio" aria-checked="true" data-level="normal">标准</button>
+            <button type="button" role="radio" aria-checked="false" data-level="hard">狂野</button>
+          </div>
+          <p class="card__hint" id="difficultyHint">5 位对手，节奏贴近你的极限。</p>
+          <div class="record">
+            <span class="stat__label">个人最快圈</span>
+            <b class="mono" id="menuBest">--:--.---</b>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn--primary btn--lg" id="btnStart" type="button">开始比赛</button>
+      <p class="footnote">方向键或 WASD 操控 · 触屏设备会自动显示虚拟按键 · 离开赛道会明显掉速</p>
+    </div>
+  </section>
+
+  <!-- 暂停 -->
+  <section class="screen screen--modal" id="screenPause" hidden>
+    <div class="modal">
+      <h2 class="modal__title">已暂停</h2>
+      <p class="modal__note" id="pauseNote">当前第 1 圈</p>
+      <div class="modal__actions">
+        <button class="btn btn--primary" id="btnResume" type="button">继续比赛</button>
+        <button class="btn" id="btnRestart" type="button">重新开始</button>
+        <button class="btn btn--ghost" id="btnQuit" type="button">返回主菜单</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结算 -->
+  <section class="screen screen--modal" id="screenResult" hidden>
+    <div class="modal modal--wide">
+      <p class="eyebrow" id="resultEyebrow">比赛结束</p>
+      <h2 class="modal__title" id="resultPlace">第 1 名</h2>
+      <p class="modal__note" id="resultNote"></p>
+
+      <div class="result__stats">
+        <div class="stat">
+          <span class="stat__label">总用时</span>
+          <span class="stat__value mono" id="resTotal">--:--.---</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">最快单圈</span>
+          <span class="stat__value mono" id="resBest">--:--.---</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">个人纪录</span>
+          <span class="stat__value mono" id="resRecord">--:--.---</span>
+        </div>
+      </div>
+
+      <table class="result__table">
+        <caption class="visually-hidden">最终排名</caption>
+        <thead>
+          <tr><th scope="col">名次</th><th scope="col">车手</th><th scope="col">成绩</th></tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+
+      <div class="modal__actions">
+        <button class="btn btn--primary" id="btnAgain" type="button">再来一局</button>
+        <button class="btn btn--ghost" id="btnToMenu" type="button">返回主菜单</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 触屏虚拟按键 -->
+  <div class="touch" id="touch" hidden>
+    <div class="touch__side touch__side--left">
+      <button class="tbtn" id="btnLeft" type="button" aria-label="左转">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M15.6 4.6v14.8L6.6 12z"></path></svg>
+      </button>
+      <button class="tbtn" id="btnRight" type="button" aria-label="右转">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M8.4 4.6v14.8L17.4 12z"></path></svg>
+      </button>
+    </div>
+    <div class="touch__side touch__side--right">
+      <button class="tbtn tbtn--brake" id="btnBrake" type="button" aria-label="刹车">刹车</button>
+      <button class="tbtn tbtn--gas" id="btnGas" type="button" aria-label="加速">加速</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="visually-hidden" id="liveRegion" role="status" aria-live="polite"></div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/track.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/race.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
