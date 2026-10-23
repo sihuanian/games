@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>游戏世界 · Games</title>
+  <style>
+    :root { color-scheme: light dark; --bg: #f4f5f8; --surface: #fff; --text: #192234; --muted: #536078; --border: #d4dae5; --accent: #2257bc; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #10151f; --surface: #1b2433; --text: #eef2fa; --muted: #b1bfd6; --border: #34435a; --accent: #9dbbff; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, sans-serif; }
+    main { max-width: 920px; margin: 0 auto; padding: 80px 24px; }
+    h1 { margin-bottom: 8px; font-size: clamp(30px, 6vw, 48px); }
+    p { color: var(--muted); }
+    .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 24px; margin-top: 40px; }
+    a { display: block; min-width: 0; padding: 28px; color: inherit; text-decoration: none; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+    a:hover, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    h2 { margin-top: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .enter { color: var(--accent); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>游戏世界 · Games</h1>
+    <p>选择一个世界，即刻探索。<br>Choose a world and start exploring.</p>
+    <div class="games">
+      <a href="./apex-circuit/">
+        <h2 title="环线竞速 · APEX CIRCUIT">环线竞速 · APEX CIRCUIT</h2>
+        <p>挑战三圈赛道，与五位 AI 车手竞速。<br>Race three laps against five AI drivers.</p>
+        <span class="enter">开始竞速 · Race →</span>
+      </a>
+      <a href="./forbidden-city-3d/public/">
+        <h2 title="紫禁城 · Forbidden City 3D">紫禁城 · Forbidden City 3D</h2>
+        <p>沿中轴线探索紫禁城三维建筑沙盘。<br>Explore the Forbidden City in interactive 3D.</p>
+        <span class="enter">进入沙盘 · Explore →</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

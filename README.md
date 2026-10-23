@@ -2,6 +2,16 @@
 
 本工作区中的两个浏览器应用可以独立运行，启动方式如下。
 
+## 在线访问（GitHub Pages）
+
+- 游戏入口 / Games: https://sihuanian.github.io/games/
+- 环线竞速 / APEX CIRCUIT: https://sihuanian.github.io/games/apex-circuit/
+- 紫禁城 / Forbidden City 3D: https://sihuanian.github.io/games/forbidden-city-3d/public/
+
+在仓库 **Settings → Pages → Source** 中选择 **GitHub Actions**。
+推送游戏文件或入口页到 `main` 后，`Deploy games to GitHub Pages` 工作流会自动发布，
+也可以在 Actions 页面手动运行。发布内容仅包含入口页及两个应用的静态资源。
+
 ## 环境要求
 
 - **Node.js 18 或更高版本**（两个项目都只用 Node 内置的 `http` / `fs` 模块）

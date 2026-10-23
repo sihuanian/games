@@ -1,0 +1,44 @@
+name: Deploy games to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apex-circuit/**'
+      - 'forbidden-city-3d/**'
+      - 'index.html'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare static games
+        run: |
+          mkdir -p _site/apex-circuit _site/forbidden-city-3d
+          cp index.html _site/
+          cp apex-circuit/index.html apex-circuit/styles.css _site/apex-circuit/
+          cp -R apex-circuit/js _site/apex-circuit/
+          cp -R forbidden-city-3d/public forbidden-city-3d/vendor _site/forbidden-city-3d/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
